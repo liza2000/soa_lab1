@@ -1,4 +1,5 @@
 package ru.itmo.soa.model;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.CreationTimestamp;
@@ -23,7 +24,7 @@ public class Vehicle implements Comparable<Vehicle>, Serializable {
     @NotNull
     Coordinates coordinates; //Поле не может быть null
 
-    @Column(columnDefinition="date", updatable = false)
+    @Column(columnDefinition = "date", updatable = false)
     @CreationTimestamp
     @NotNull
     private java.util.Date creationDate; //Поле не может быть null, Значение этого поля должно генерироваться автоматически
@@ -37,7 +38,8 @@ public class Vehicle implements Comparable<Vehicle>, Serializable {
     @Enumerated(EnumType.STRING)
     private FuelType fuelType; //Поле не может быть null
 
-    public Vehicle(){}
+    public Vehicle() {
+    }
 
     public Long getId() {
         return id;
@@ -63,7 +65,6 @@ public class Vehicle implements Comparable<Vehicle>, Serializable {
     public void setCoordinates(Coordinates coordinates) {
         this.coordinates = coordinates;
     }
-
 
 
     public int compareTo(Vehicle o) {

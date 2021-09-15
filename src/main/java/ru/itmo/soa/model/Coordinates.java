@@ -5,18 +5,21 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "coordinates")
-public class Coordinates  implements Comparable<Vehicle>, Serializable {
+public class Coordinates implements Comparable<Vehicle>, Serializable {
 
     @Id
-   @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     private int x;
     private Long y;
-    public Coordinates(){}
-    public Coordinates(int x, Long y){
+
+    public Coordinates() {
+    }
+
+    public Coordinates(int x, Long y) {
         this.x = x;
         this.y = y;
-}
+    }
 
     public Long getId() {
         return id;
@@ -25,7 +28,6 @@ public class Coordinates  implements Comparable<Vehicle>, Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-
 
 
     @Override
