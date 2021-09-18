@@ -8,16 +8,16 @@ import ru.itmo.soa.entity.WeaponType;
 @NoArgsConstructor
 @Getter
 public class HumanData {
-    private Long id; //Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
+    private Long id; //Поле не может быть null, Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
     private String name; //Поле не может быть null, Строка не может быть пустой
     private CoordinatesData coordinates; //Поле не может быть null
-    private Boolean realHero; //Поле не может быть null
-    private Boolean hasToothpick;
-    private Float impactSpeed; //Максимальное значение поля: 333
+    private Boolean realHero;
+    private Boolean hasToothpick; //Поле не может быть null
+    private Float impactSpeed; //Значение поля должно быть больше -741
     private String soundtrackName; //Поле не может быть null
-    private Double minutesOfWaiting;
+    private Double minutesOfWaiting; //Поле не может быть null
     private WeaponType weaponType; //Поле не может быть null
-    private CarData car; //Поле не может быть null
+    private CarData car; //Поле может быть null
 
     public HumanBeing toHumanBeing() {
         return new HumanBeing(

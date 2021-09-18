@@ -22,7 +22,7 @@ public class HumanValidator implements Validator<HumanData> {
         List<String> errorList = new ArrayList<>();
         for (Field f : HumanData.class.getDeclaredFields()) {
             f.setAccessible(true);
-            if (f.get(human) == null) {
+            if (f.get(human) == null && !"car".equals(f.getName())) {
                 errorList.add((String.format("human_being %s isn't specified", f.getName())));
             }
         }

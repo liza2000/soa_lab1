@@ -11,7 +11,7 @@ import ru.itmo.soa.entity.Car;
 @NoArgsConstructor
 @Getter
 public class CarData {
-    private String name; //Поле может быть null
+    private String name; //Поле не может быть null
 
     public Car toCar() {
         return new Car(0, name);

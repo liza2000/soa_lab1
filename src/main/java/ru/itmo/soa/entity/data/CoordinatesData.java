@@ -10,8 +10,8 @@ import ru.itmo.soa.entity.Coordinates;
 @NoArgsConstructor
 @Getter
 public class CoordinatesData {
-    private Float x;
-    private Float y; //Значение поля должно быть больше -399, Поле не может быть null
+    private Float x; //Значение поля должно быть больше -706
+    private Float y; //Поле не может быть null
 
     public Coordinates toCoordinates() {
         return new Coordinates(0, x, y);
