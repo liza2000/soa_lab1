@@ -41,7 +41,7 @@ public class HumanBeing {
     @OneToOne(cascade = CascadeType.ALL)
     @Getter
     @JoinColumn(name = "car_id")
-    private Car car; //Поле не может быть null
+    private Car car; //Поле может быть null
 
     public void update(HumanData data) {
         this.name = data.getName();

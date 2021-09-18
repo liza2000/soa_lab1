@@ -14,8 +14,8 @@ public class Coordinates {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // в модели отсутствует
     @Column(columnDefinition = "REAL NOT NULL CHECK (Coordinates.x > -706)")
-    private float x;
-    private Float y; //Значение поля должно быть больше -399, Поле не может быть null
+    private float x; //Значение поля должно быть больше -706
+    private Float y; //Поле не может быть null
 
     public void update(CoordinatesData data) {
         this.x = data.getX();
