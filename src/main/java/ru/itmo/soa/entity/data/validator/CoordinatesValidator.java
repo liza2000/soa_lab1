@@ -16,11 +16,11 @@ public class CoordinatesValidator  implements Validator<CoordinatesData> {
         for (Field f : CoordinatesData.class.getDeclaredFields()) {
             f.setAccessible(true);
             if (f.get(coordinates) == null) {
-                errorList.add(String.format("Coordinates %s isn't specified", f.getName()));
+                errorList.add(String.format("Coordinate %s isn't specified", f.getName()));
             }
         }
-        if (coordinates.getY() != null && coordinates.getY() <= -706.0) {
-            errorList.add("Coordinates y should be bigger than -399");
+        if (coordinates.getX() != null && coordinates.getX() <= -706.0) {
+            errorList.add("Coordinate x should be bigger than -706");
         }
         return errorList;
     }

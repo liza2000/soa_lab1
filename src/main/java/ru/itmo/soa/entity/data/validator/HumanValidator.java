@@ -3,7 +3,7 @@ package ru.itmo.soa.entity.data.validator;
 
 import ru.itmo.soa.entity.data.HumanData;
 
-import javax.xml.bind.ValidationException;
+import jakarta.validation.ValidationException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ public class HumanValidator implements Validator<HumanData> {
         coordinatesValidator = new CoordinatesValidator();
     }
 
-    public List<String> validate(HumanData human) throws IllegalAccessException, ValidationException {
+    public List<String> validate(HumanData human) throws IllegalAccessException, jakarta.validation.ValidationException {
         List<String> errorList = new ArrayList<>();
         for (Field f : HumanData.class.getDeclaredFields()) {
             f.setAccessible(true);
@@ -26,7 +26,7 @@ public class HumanValidator implements Validator<HumanData> {
                 errorList.add((String.format("human_being %s isn't specified", f.getName())));
             }
         }
-        if (human.getImpactSpeed() != null && human.getImpactSpeed() > -741) {
+        if (human.getImpactSpeed() != null && human.getImpactSpeed() <= -741) {
             errorList.add("human_being impact_speed should be not bigger than -741");
         }
         if (human.getName() != null && human.getName().trim().length() == 0) {
