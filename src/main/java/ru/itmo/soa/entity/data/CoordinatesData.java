@@ -14,6 +14,6 @@ public class CoordinatesData {
     private Float y; //Поле не может быть null
 
     public Coordinates toCoordinates() {
-        return new Coordinates(0, x, y);
+        return new Coordinates(null, x, y);
     }
 }

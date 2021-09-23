@@ -1,23 +1,27 @@
 package ru.itmo.soa.servlet;
 
 import com.google.gson.Gson;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import ru.itmo.soa.service.HumanBeingService;
 
-@WebServlet(name = "humanBeing", value = "/human-being/*")
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+//@WebServlet(name = "humanBeing", value = "/human-being/*")
 public class HumanBeingServlet extends HttpServlet {
 
     private static final String SORTING_PARAM = "sort";
-    private static final String OFFSET_PARAM = "offset";
+    private static final String PAGE_INDEX = "pageIndex";
     private static final String PAGE_SIZE_PARAM = "limit";
 
-    private static final String SOUNDTRACK_NAME_LESS_PARAM = "soundtrackNameLess";
-    private static final String MINUTES_OF_WAITING_LESS_PARAM = "minutesOfWaitingLess";
+//    Удалить все объекты, значение поля minutesOfWaiting которого эквивалентно заданному.
+//    Вернуть количество объектов, значение поля weaponType которых меньше заданного.
+//    Вернуть массив объектов, значение поля soundtrackName которых начинается с заданной подстроки.
+
+    private static final String WEAPON_TYPE_LESS = "weaponTypeLess";
+    private static final String SOUNDTRACK_NAME_STARTS = "soundtrackNameStarts";
 
     private static final String NAME_PARAM = "name";
     private static final String MINUTES_OF_WAITING_PARAM = "minutesOfWaiting";
@@ -53,7 +57,7 @@ public class HumanBeingServlet extends HttpServlet {
                request.getParameterValues(COORDINATES_Y_PARAM),
                request.getParameterValues(CREATION_DATE_PARAM),
                request.getParameterValues(SORTING_PARAM),
-               request.getParameter(OFFSET_PARAM),
+               request.getParameter(PAGE_INDEX),
                request.getParameter(PAGE_SIZE_PARAM)
         );
     }
@@ -61,41 +65,46 @@ public class HumanBeingServlet extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) {
         String pathInfo = request.getPathInfo();
-        if (pathInfo == null) {
-            HumanBeingRequestParams filterParams = getFilterParams(request);
-            String minutesOfWaitingLess = request.getParameter(MINUTES_OF_WAITING_LESS_PARAM);
-            if (minutesOfWaitingLess != null)
-                service.findMinutesOfWaitingLess(response, Long.parseLong(minutesOfWaitingLess));
-             else
-                service.getAllHumans(response, filterParams);
+        String[] servletPath = pathInfo == null ? null : pathInfo.split("/");
 
-        } else {
-            String[] servletPath = pathInfo.split("/");
-            if (servletPath.length > 1) {
-                String id = servletPath[1];
-                service.getHuman(response, Integer.parseInt(id));
-            }
+        if (servletPath == null || servletPath.length <= 1) {
+            HumanBeingRequestParams filterParams = getFilterParams(request);
+            service.getAllHumans(response, filterParams);
+            return;
         }
+
+        if (SOUNDTRACK_NAME_STARTS.equals(servletPath[1])) {
+            String minutesOfWaitingLess = request.getParameter(SOUNDTRACK_NAME_PARAM);
+            if (minutesOfWaitingLess != null)
+                service.findHumansSoundtrackNameStartsWith(response, minutesOfWaitingLess);
+            return;
+        }
+
+        if (WEAPON_TYPE_LESS.equals(servletPath[1])) {
+            String weaponType = request.getParameter(WEAPON_TYPE_PARAM);
+            if (weaponType != null)
+                service.countWeaponTypeLess(response, weaponType);
+            return;
+        }
+        String id = servletPath[1];
+        service.getHuman(response, Long.parseLong(id));
     }
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) {
-        String pathInfo = request.getPathInfo();
-        if (pathInfo == null) {
             service.createHuman(request, response);
-        } else {
-            String[] servletPath = pathInfo.split("/");
-            if (servletPath.length > 1) {
-                String soundTrackName = request.getParameter(SOUNDTRACK_NAME_LESS_PARAM);
-                service.countSoundtrackNameLess(response, soundTrackName);
-            }
-        }
     }
 
     @SneakyThrows
     @Override
     public void doPut(HttpServletRequest request, HttpServletResponse response) {
-        service.updateHuman(request, response);
+        String pathInfo = request.getPathInfo();
+        String[] servletPath = pathInfo == null ? null : pathInfo.split("/");
+
+        if (servletPath != null && servletPath.length > 1) {
+            String id = servletPath[1];
+            service.updateHuman(Long.parseLong(id), request, response);
+        }
     }
 
     @Override
@@ -103,9 +112,8 @@ public class HumanBeingServlet extends HttpServlet {
         String pathInfo = request.getPathInfo();
         if (pathInfo == null) {
             String minutesOfWaiting = request.getParameter(MINUTES_OF_WAITING_PARAM);
-            if (minutesOfWaiting != null) {
+            if (minutesOfWaiting != null)
                 service.deleteAllMinutesOfWaitingEqual(response, Integer.parseInt(minutesOfWaiting));
-            }
         } else {
             String[] servletPath = pathInfo.split("/");
             if (servletPath.length > 1) {

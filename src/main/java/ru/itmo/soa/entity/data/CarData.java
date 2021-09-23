@@ -10,10 +10,11 @@ import ru.itmo.soa.entity.Car;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Data
 public class CarData {
     private String name; //Поле не может быть null
 
     public Car toCar() {
-        return new Car(0, name);
+        return new Car(null, name);
     }
 }

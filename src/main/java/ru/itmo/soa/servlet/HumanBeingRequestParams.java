@@ -1,10 +1,11 @@
 package ru.itmo.soa.servlet;
 
 
+
+import lombok.SneakyThrows;
 import ru.itmo.soa.entity.Car;
 import ru.itmo.soa.entity.Coordinates;
 import ru.itmo.soa.entity.HumanBeing;
-import ru.itmo.soa.model.Vehicle;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Join;
@@ -28,7 +29,7 @@ public class HumanBeingRequestParams {
     public final String[] coordinatesY;
     public final String[] creationDate;
     public final String[] sort;
-    public final int offset;
+    public final int pageIndex;
     public final int limit;
 
     HumanBeingRequestParams(
@@ -44,7 +45,7 @@ public class HumanBeingRequestParams {
             String[] coordinatesY,
             String[] creationDate,
             String[] sort,
-            String offset,
+            String pageIndex,
             String limit
     ) {
         this.sort = sort;
@@ -59,7 +60,7 @@ public class HumanBeingRequestParams {
         this.coordinatesX = coordinatesX;
         this.coordinatesY = coordinatesY;
         this.creationDate = creationDate;
-        this.offset = offset == null ? 0 : Integer.parseInt(offset);
+        this.pageIndex = pageIndex == null ? 0 : Integer.parseInt(pageIndex);
         this.limit = limit == null ? 5 : Integer.parseInt(limit);
     }
 
@@ -79,10 +80,13 @@ public class HumanBeingRequestParams {
 
         if (minutesOfWaiting != null)
             if (minutesOfWaiting.length > 1) {
-                predicates.add(cb.ge(root.get("minutesOfWaiting"),Double.parseDouble(minutesOfWaiting[0])));
-                predicates.add(cb.le(root.get("minutesOfWaiting"),Double.parseDouble(minutesOfWaiting[1])));
+                if (minutesOfWaiting[0]!=null && !minutesOfWaiting[0].isEmpty())
+                    predicates.add(cb.ge(root.get("minutesOfWaiting"),Double.parseDouble(minutesOfWaiting[0])));
+                if (minutesOfWaiting[1]!=null && !minutesOfWaiting[1].isEmpty())
+                    predicates.add(cb.le(root.get("minutesOfWaiting"),Double.parseDouble(minutesOfWaiting[1])));
             } else
-                predicates.add(cb.equal(root.get("minutesOfWaiting"), Double.parseDouble(minutesOfWaiting[0])));
+                if (minutesOfWaiting[0]!=null && !minutesOfWaiting[0].isEmpty())
+                    predicates.add(cb.equal(root.get("minutesOfWaiting"), Double.parseDouble(minutesOfWaiting[0])));
 
         if (realHero != null)
             predicates.add(cb.equal(root.get("realHero"), realHero));
@@ -92,10 +96,13 @@ public class HumanBeingRequestParams {
 
         if (impactSpeed != null)
             if (impactSpeed.length > 1) {
-                predicates.add(cb.ge(root.get("impactSpeed"),Float.parseFloat(impactSpeed[0])));
-                predicates.add(cb.le(root.get("impactSpeed"),Float.parseFloat(impactSpeed[1])));
+                if (impactSpeed[0]!=null && !impactSpeed[0].isEmpty())
+                    predicates.add(cb.ge(root.get("impactSpeed"),Float.parseFloat(impactSpeed[0])));
+                if (impactSpeed[1]!=null && !impactSpeed[1].isEmpty())
+                    predicates.add(cb.le(root.get("impactSpeed"),Float.parseFloat(impactSpeed[1])));
             } else
-                predicates.add(cb.equal(root.get("impactSpeed"), Float.parseFloat(impactSpeed[0])));
+                if (impactSpeed[0]!=null && !impactSpeed[0].isEmpty())
+                    predicates.add(cb.equal(root.get("impactSpeed"), Float.parseFloat(impactSpeed[0])));
 
         if (soundtrackName != null)
             predicates.add(cb.like(root.get("soundtrackName"), like(soundtrackName)));
@@ -108,17 +115,23 @@ public class HumanBeingRequestParams {
 
         if (coordinatesX != null)
             if (coordinatesX.length > 1) {
-                predicates.add(cb.ge(joinCoordinates.get("x"),Float.parseFloat(coordinatesX[0])));
-                predicates.add(cb.le(joinCoordinates.get("x"),Float.parseFloat(coordinatesX[1])));
+                if (coordinatesX[0]!=null && !coordinatesX[0].isEmpty())
+                    predicates.add(cb.ge(joinCoordinates.get("x"),Float.parseFloat(coordinatesX[0])));
+                if (coordinatesX[1]!=null && !coordinatesX[1].isEmpty())
+                    predicates.add(cb.le(joinCoordinates.get("x"),Float.parseFloat(coordinatesX[1])));
             } else
-                predicates.add(cb.equal(joinCoordinates.get("x"), Float.parseFloat(coordinatesX[0])));
+            if (coordinatesX[0]!=null && !coordinatesX[0].isEmpty())
+                    predicates.add(cb.equal(joinCoordinates.get("x"), Float.parseFloat(coordinatesX[0])));
 
         if (coordinatesY != null)
             if (coordinatesY.length > 1) {
-                predicates.add(cb.ge(joinCoordinates.get("y"),Float.parseFloat(coordinatesY[0])));
-                predicates.add(cb.le(joinCoordinates.get("y"),Float.parseFloat(coordinatesY[1])));
+                if (coordinatesY[0]!=null && !coordinatesY[0].isEmpty())
+                    predicates.add(cb.ge(joinCoordinates.get("y"),Float.parseFloat(coordinatesY[0])));
+                if (coordinatesY[1]!=null && !coordinatesY[1].isEmpty())
+                    predicates.add(cb.le(joinCoordinates.get("y"),Float.parseFloat(coordinatesY[1])));
             } else
-                predicates.add(cb.equal(joinCoordinates.get("y"), Float.parseFloat(coordinatesY[0])));
+            if (coordinatesY[0]!=null && !coordinatesY[0].isEmpty())
+                    predicates.add(cb.equal(joinCoordinates.get("y"), Float.parseFloat(coordinatesY[0])));
         if (creationDate != null) {
             try {
                 if (creationDate.length > 1) {

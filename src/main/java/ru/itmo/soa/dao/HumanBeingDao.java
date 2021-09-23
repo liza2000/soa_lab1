@@ -38,13 +38,13 @@ public class HumanBeingDao {
         return count;
     }
 
-    public List<HumanBeing> findHumansMinutesOfWaitingLess(long minutesOfWaiting) {
+    public List<HumanBeing> findHumansSoundtrackNameStarts(String soundtrackName) {
         List<HumanBeing> list = new ArrayList<>();
         Transaction transaction = null;
         try (Session session = HibernateDatasource.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            Query<HumanBeing> query = session.createQuery("from HumanBeing H where H.minutesOfWaiting < :minutesOfWaiting");
-            query.setParameter("minutesOfWaiting", minutesOfWaiting);
+            Query<HumanBeing> query = session.createQuery("from HumanBeing H where H.soundtrackName like :soundtrackName");
+            query.setParameter("soundtrackName", soundtrackName+'%');
             list = query.getResultList();
             transaction.commit();
         } catch (Exception e) {
@@ -82,10 +82,15 @@ public class HumanBeingDao {
     @Data
     @AllArgsConstructor
     public static class PaginationResult {
+
+        private final int pageSize;
+        private final int pageIndex;
         private final long totalItems;
         private final List<HumanBeing> list;
          PaginationResult() {
-            totalItems = 0;
+             pageSize = 0;
+             pageIndex = 0;
+             totalItems = 0;
             list = new ArrayList<>();
         }
     }
@@ -110,7 +115,7 @@ public class HumanBeingDao {
             CriteriaQuery<HumanBeing> query = cr.select(root).where(predicates.toArray(new Predicate[0])).orderBy(orders);
 
             Query<HumanBeing> typedQuery = session.createQuery(query);
-            typedQuery.setFirstResult(params.offset);
+            typedQuery.setFirstResult(params.pageIndex*params.limit);
             typedQuery.setMaxResults(params.limit);
 
             CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
@@ -119,7 +124,7 @@ public class HumanBeingDao {
 
             List<HumanBeing> list = typedQuery.getResultList();
 
-            res = new PaginationResult(count, list);
+            res = new PaginationResult(params.limit, params.pageIndex, count, list);
 
             transaction.commit();
         } catch (Exception e) {
@@ -131,7 +136,7 @@ public class HumanBeingDao {
         return res;
     }
 
-    public Optional<HumanBeing> getHuman(int id) {
+    public Optional<HumanBeing> getHuman(long id) {
         Transaction transaction = null;
         HumanBeing humanBeing = null;
         try (Session session = HibernateDatasource.getSessionFactory().openSession()) {
@@ -147,7 +152,7 @@ public class HumanBeingDao {
         return Optional.ofNullable(humanBeing);
     }
 
-    public boolean deleteHuman(int id) {
+    public boolean deleteHuman(long id) {
         Transaction transaction = null;
         boolean successful = false;
         try (Session session = HibernateDatasource.getSessionFactory().openSession()) {
@@ -168,13 +173,13 @@ public class HumanBeingDao {
         return successful;
     }
 
-    public int createHuman(HumanBeing human) {
+    public HumanBeing createHuman(HumanBeing human) {
         Transaction transaction = null;
         try (Session session = HibernateDatasource.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
             session.save(human);
             transaction.commit();
-            return human.getId();
+            return human;
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();

@@ -2,22 +2,16 @@ package ru.itmo.soa.entity.data.validator;
 
 import ru.itmo.soa.entity.data.CarData;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CarValidator implements Validator<CarData> {
-    public List<String> validate(CarData car) throws IllegalAccessException {
+    public List<String> validate(CarData car) {
         List<String> errorList = new ArrayList<>();
-        if (car == null) {
+        if (car == null)
             return errorList;
-        }
-        for (Field f : CarData.class.getDeclaredFields()) {
-            f.setAccessible(true);
-            if (f.get(car) == null) {
-                errorList.add(String.format("Car %s isn't specified", f.getName()));
-            }
-        }
+            if (car.getName()==null)
+                errorList.add("Car name isn't specified");
         return errorList;
     }
 }

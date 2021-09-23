@@ -24,18 +24,19 @@
         <frontend-dir>${project.basedir}/web</frontend-dir>
         <lombok.version>1.18.20</lombok.version>
         <gson.version>2.8.8</gson.version>
+        <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>jakarta.validation</groupId>
-            <artifactId>jakarta.validation-api</artifactId>
-            <version>${jakarta.validation.version}</version>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>2.0.1.Final</version>
         </dependency>
         <dependency>
-            <groupId>jakarta.servlet</groupId>
-            <artifactId>jakarta.servlet-api</artifactId>
-            <version>${jakarta.servlet-api.version}</version>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>${javax.servlet-api.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

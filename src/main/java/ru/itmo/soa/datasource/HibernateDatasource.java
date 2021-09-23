@@ -8,6 +8,7 @@ import org.hibernate.service.ServiceRegistry;
 import ru.itmo.soa.entity.Car;
 import ru.itmo.soa.entity.Coordinates;
 import ru.itmo.soa.entity.HumanBeing;
+import ru.itmo.soa.entity.WeaponType;
 
 import java.util.Properties;
 
@@ -41,6 +42,7 @@ public class HibernateDatasource {
                 configuration.addAnnotatedClass(HumanBeing.class);
                 configuration.addAnnotatedClass(Car.class);
                 configuration.addAnnotatedClass(Coordinates.class);
+                configuration.addAnnotatedClass(WeaponType.class);
 
                 ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                         .applySettings(configuration.getProperties()).build();

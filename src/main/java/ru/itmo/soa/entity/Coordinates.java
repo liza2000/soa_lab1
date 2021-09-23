@@ -2,12 +2,14 @@ package ru.itmo.soa.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import ru.itmo.soa.entity.data.CoordinatesData;
 
 import javax.persistence.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Entity
 public class Coordinates {
     @Id

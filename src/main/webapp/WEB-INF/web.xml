@@ -12,7 +12,17 @@
         <location>/errorHandler</location>
     </error-page>
     <error-page>
-        <exception-type>jakarta.validation.ValidationException</exception-type>
+        <exception-type>javax.xml.bind.ValidationException</exception-type>
         <location>/errorHandler</location>
     </error-page>
+
+    <servlet>
+        <servlet-name>humanBeing</servlet-name>
+        <servlet-class>ru.itmo.soa.servlet.HumanBeingServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>humanBeing</servlet-name>
+        <url-pattern>/human-being/*</url-pattern>
+    </servlet-mapping>
 </web-app>

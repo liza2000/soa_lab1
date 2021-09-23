@@ -3,12 +3,14 @@ package ru.itmo.soa.entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import ru.itmo.soa.entity.data.*;
 import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@ToString
 @Table(name = "human_being")
 public class HumanBeing {
 
@@ -20,6 +22,7 @@ public class HumanBeing {
     private String name; //Поле не может быть null, Строка не может быть пустой
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "coordinates_id")
+    @Getter
     private Coordinates coordinates; //Поле не может быть null
     @Column(nullable = false, name = "creation_date", columnDefinition = "date")
     @CreationTimestamp
@@ -29,7 +32,7 @@ public class HumanBeing {
     private boolean realHero;
     @Column(nullable = false, name = "has_toothpick")
     private Boolean hasToothpick; //Поле не может быть null
-    @Column(name = "impact_speed", columnDefinition = "BIGINT CHECK (human_being.impact_speed < -741)")
+    @Column(name = "impact_speed", columnDefinition = "REAL CHECK (human_being.impact_speed > -741)")
     private float impactSpeed; //Значение поля должно быть больше -741
     @Column(nullable = false, name = "soundtrack_name")
     private String soundtrackName; //Поле не может быть null

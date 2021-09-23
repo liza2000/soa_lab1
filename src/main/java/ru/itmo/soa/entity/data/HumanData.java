@@ -8,7 +8,6 @@ import ru.itmo.soa.entity.WeaponType;
 @NoArgsConstructor
 @Getter
 public class HumanData {
-    private Long id; //Поле не может быть null, Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
     private String name; //Поле не может быть null, Строка не может быть пустой
     private CoordinatesData coordinates; //Поле не может быть null
     private Boolean realHero;
@@ -21,16 +20,17 @@ public class HumanData {
 
     public HumanBeing toHumanBeing() {
         return new HumanBeing(
-                id,
+                null,
                 name,
                 coordinates.toCoordinates(),
+                null,
                 realHero,
                 hasToothpick,
                 impactSpeed,
                 soundtrackName,
                 minutesOfWaiting,
                 weaponType,
-                car.toCar()
+                car==null?null:car.toCar()
         );
     }
 }
