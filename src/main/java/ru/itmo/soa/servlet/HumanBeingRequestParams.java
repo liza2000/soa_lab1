@@ -73,7 +73,7 @@ public class HumanBeingRequestParams {
             Root<HumanBeing> root,
             Join<HumanBeing, Car> join,
             Join<HumanBeing, Coordinates> joinCoordinates
-    ){
+    ) throws ParseException{
         List<javax.persistence.criteria.Predicate> predicates = new ArrayList<>();
         if (name != null)
             predicates.add(cb.like(root.get("name"), like(name)));
@@ -132,17 +132,13 @@ public class HumanBeingRequestParams {
             } else
             if (coordinatesY[0]!=null && !coordinatesY[0].isEmpty())
                     predicates.add(cb.equal(joinCoordinates.get("y"), Float.parseFloat(coordinatesY[0])));
-        if (creationDate != null) {
-            try {
+            if (creationDate != null)
                 if (creationDate.length > 1) {
                     predicates.add(cb.greaterThanOrEqualTo(root.get("creationDate"),new SimpleDateFormat("dd.MM.yyyy").parse(creationDate[0])));
                     predicates.add(cb.lessThanOrEqualTo(root.get("creationDate"), new SimpleDateFormat("dd.MM.yyyy").parse(creationDate[1])));
                 } else
                     predicates.add(cb.equal(root.get("creationDate"), new SimpleDateFormat("dd.MM.yyyy").parse(creationDate[0])));
-            }catch (ParseException e){
-                System.out.println(e.getMessage());
-            }
-        }
+
         return predicates;
     }
 

@@ -94,6 +94,7 @@ public class HumanBeingService {
             humanBeing.update(humanData);
             dao.updateHuman(humanBeing);
             response.setStatus(200);
+            response.getWriter().write(gson.toJson("Updated successfully"));
         } else {
             throw new EntityNotFoundException("Cannot update human with id "+ id);
         }

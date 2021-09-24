@@ -15,6 +15,10 @@
         <exception-type>javax.xml.bind.ValidationException</exception-type>
         <location>/errorHandler</location>
     </error-page>
+    <error-page>
+        <exception-type>java.text.ParseException</exception-type>
+        <location>/errorHandler</location>
+    </error-page>
 
     <servlet>
         <servlet-name>humanBeing</servlet-name>

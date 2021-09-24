@@ -2,6 +2,7 @@ package ru.itmo.soa.dao;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.SneakyThrows;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -12,6 +13,7 @@ import ru.itmo.soa.entity.HumanBeing;
 import ru.itmo.soa.servlet.HumanBeingRequestParams;
 
 import javax.persistence.criteria.*;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -95,7 +97,7 @@ public class HumanBeingDao {
         }
     }
 
-
+    @SneakyThrows
     public PaginationResult getAllHumans(HumanBeingRequestParams params) {
         Transaction transaction = null;
         PaginationResult res = new PaginationResult();
@@ -119,7 +121,13 @@ public class HumanBeingDao {
             typedQuery.setMaxResults(params.limit);
 
             CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
-            countQuery.select(cb.count(countQuery.from(HumanBeing.class)));
+            Root<HumanBeing> countRoot = countQuery.from(HumanBeing.class);
+            Join<HumanBeing, Coordinates> countCoorJoin = countRoot.join("coordinates");
+            Join<HumanBeing, Car> countCarJoin = countRoot.join("car");
+
+            List<Predicate> countPredicates = params.getPredicates(cb, countRoot, countCarJoin, countCoorJoin);
+            countQuery = countQuery.where(countPredicates.toArray(new Predicate[0]));
+            countQuery.select(cb.count(countRoot));
             Long count = session.createQuery(countQuery).getSingleResult();
 
             List<HumanBeing> list = typedQuery.getResultList();
@@ -127,7 +135,7 @@ public class HumanBeingDao {
             res = new PaginationResult(params.limit, params.pageIndex, count, list);
 
             transaction.commit();
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException| ParseException e) {
             throw e;
         } catch (Exception e) {
             if (transaction != null) {
