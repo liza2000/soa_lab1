@@ -127,6 +127,8 @@ public class HumanBeingDao {
             res = new PaginationResult(params.limit, params.pageIndex, count, list);
 
             transaction.commit();
+        } catch (NumberFormatException e) {
+            throw e;
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
