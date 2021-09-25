@@ -74,9 +74,9 @@ public class HumanBeingServlet extends HttpServlet {
         }
 
         if (SOUNDTRACK_NAME_STARTS.equals(servletPath[1])) {
-            String minutesOfWaitingLess = request.getParameter(SOUNDTRACK_NAME_PARAM);
-            if (minutesOfWaitingLess != null)
-                service.findHumansSoundtrackNameStartsWith(response, minutesOfWaitingLess);
+            String soundtrackName = request.getParameter(SOUNDTRACK_NAME_PARAM);
+            if (soundtrackName != null)
+                service.findHumansSoundtrackNameStartsWith(response, soundtrackName);
             return;
         }
 
@@ -110,10 +110,10 @@ public class HumanBeingServlet extends HttpServlet {
     @Override
     public void doDelete(HttpServletRequest request, HttpServletResponse response) {
         String pathInfo = request.getPathInfo();
-        if (pathInfo == null) {
+        if (pathInfo == null || pathInfo.split("/").length==0) {
             String minutesOfWaiting = request.getParameter(MINUTES_OF_WAITING_PARAM);
             if (minutesOfWaiting != null)
-                service.deleteAllMinutesOfWaitingEqual(response, Integer.parseInt(minutesOfWaiting));
+                service.deleteAllMinutesOfWaitingEqual(response, Double.parseDouble(minutesOfWaiting));
         } else {
             String[] servletPath = pathInfo.split("/");
             if (servletPath.length > 1) {

@@ -27,9 +27,12 @@ public class HumanBeingDao {
         Transaction transaction = null;
         try (Session session = HibernateDatasource.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            Query<Long> query = session.createQuery("select count(*) from HumanBeing H where H.weaponType < :weaponType");
-            query.setParameter("weaponType", weaponType);
-            count = query.getSingleResult();
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+            Root<HumanBeing> countRoot = countQuery.from(HumanBeing.class);
+            countQuery = countQuery.where(cb.lessThan(countRoot.get("weaponType").as(String.class), weaponType));
+            countQuery.select(cb.count(countRoot));
+            count = session.createQuery(countQuery).getSingleResult();
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
@@ -58,27 +61,23 @@ public class HumanBeingDao {
         return list;
     }
 
-    public long deleteAllHumanMinutesOfWaitingEqual(long minutesOfWaiting) {
-        long deletedId = -1;
+    public int deleteAllHumanMinutesOfWaitingEqual(double minutesOfWaiting) {
+        int deletedCount = 0;
         Transaction transaction = null;
         try (Session session = HibernateDatasource.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            Query<HumanBeing> query = session.createQuery("from HumanBeing H where H.minutesOfWaiting = :minutesOfWaiting");
+            Query<HumanBeing> query = session.createQuery("delete from HumanBeing H where H.minutesOfWaiting = :minutesOfWaiting");
             query.setParameter("minutesOfWaiting", minutesOfWaiting);
-            List<HumanBeing> humans = query.getResultList();
-            for(HumanBeing human: humans)
-                session.delete(humans);
+          deletedCount = query.executeUpdate();
             session.flush();
             transaction.commit();
-            if (!humans.isEmpty())
-                deletedId = 0;
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
             }
             e.printStackTrace();
         }
-        return deletedId;
+        return deletedCount;
     }
 
     @Data

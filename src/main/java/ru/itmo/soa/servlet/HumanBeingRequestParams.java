@@ -108,7 +108,7 @@ public class HumanBeingRequestParams {
             predicates.add(cb.like(root.get("soundtrackName"), like(soundtrackName)));
 
         if (weaponType != null)
-            predicates.add(root.get("weaponType").as(String.class).in( weaponType));
+            predicates.add(root.get("weaponType").as(String.class).in(weaponType));
 
         if (carName != null)
             predicates.add(cb.like(join.get("name"), like(carName)));

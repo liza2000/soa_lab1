@@ -30,12 +30,13 @@ public class HibernateDatasource {
                 settings.put(Environment.URL, "jdbc:postgresql://localhost:5432/postgres");
                 settings.put(Environment.USER, "postgres");
                 settings.put(Environment.PASS, "postgres");
-                settings.put(Environment.DIALECT, "org.hibernate.dialect.PostgreSQLDialect");
+                settings.put(Environment.DIALECT, "org.hibernate.dialect.PostgreSQL9Dialect");
 
                 settings.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
                 settings.put(Environment.SHOW_SQL, "true");
 
                 settings.put(Environment.HBM2DDL_AUTO, "update");
+                settings.put(Environment.HBM2DDL_CHARSET_NAME, "UTF-8");
 
                 configuration.setProperties(settings);
 

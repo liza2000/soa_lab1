@@ -46,11 +46,11 @@ public class HumanBeingService {
     }
 
     @SneakyThrows
-    public void deleteAllMinutesOfWaitingEqual(HttpServletResponse response, long minutesOfWaiting) {
-        long id = dao.deleteAllHumanMinutesOfWaitingEqual(minutesOfWaiting);
-        response.setStatus(id >= 0 ? 200 : 404);
+    public void deleteAllMinutesOfWaitingEqual(HttpServletResponse response, double minutesOfWaiting) {
+        int count = dao.deleteAllHumanMinutesOfWaitingEqual(minutesOfWaiting);
+        response.setStatus(count > 0 ? 200 : 404);
         PrintWriter writer = response.getWriter();
-        writer.write(gson.toJson("success"));
+        writer.write(gson.toJson(count>0?"Deleted "+ count + " humans":"No humans with minutes of waiting = " + minutesOfWaiting));
     }
 
     @SneakyThrows
@@ -102,7 +102,7 @@ public class HumanBeingService {
 
     @SneakyThrows
     public void deleteHuman(HttpServletResponse response, long id) {
-        if (dao.deleteHuman(878)) {
+        if (dao.deleteHuman(id)) {
             response.setStatus(200);
             response.getWriter().write(gson.toJson("Deleted successfully"));
         } else {
