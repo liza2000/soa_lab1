@@ -106,7 +106,7 @@ public class HumanBeingDao {
             CriteriaBuilder cb = session.getCriteriaBuilder();
             CriteriaQuery<HumanBeing> cr = cb.createQuery(HumanBeing.class);
             Root<HumanBeing> root = cr.from(HumanBeing.class);
-            Join<HumanBeing, Car> join = root.join("car");
+            Join<HumanBeing, Car> join = root.join("car", JoinType.LEFT);
             Join<HumanBeing, Coordinates> joinCoordinates = root.join("coordinates");
 
 
@@ -122,7 +122,7 @@ public class HumanBeingDao {
             CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
             Root<HumanBeing> countRoot = countQuery.from(HumanBeing.class);
             Join<HumanBeing, Coordinates> countCoorJoin = countRoot.join("coordinates");
-            Join<HumanBeing, Car> countCarJoin = countRoot.join("car");
+            Join<HumanBeing, Car> countCarJoin = countRoot.join("car", JoinType.LEFT);
 
             List<Predicate> countPredicates = params.getPredicates(cb, countRoot, countCarJoin, countCoorJoin);
             countQuery = countQuery.where(countPredicates.toArray(new Predicate[0]));

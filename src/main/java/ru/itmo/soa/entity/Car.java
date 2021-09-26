@@ -14,7 +14,7 @@ public class Car {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // в модели отсутствует
     @Column(nullable = false)
-    private String name; //Поле может быть null
+    private String name; 
 
     public void update(CarData carData) {
         this.name = carData.getName();
