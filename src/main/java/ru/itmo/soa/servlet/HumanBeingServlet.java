@@ -12,9 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 //@WebServlet(name = "humanBeing", value = "/human-being/*")
 public class HumanBeingServlet extends HttpServlet {
 
-    private static final String SORTING_PARAM = "sort";
-    private static final String PAGE_INDEX = "pageIndex";
-    private static final String PAGE_SIZE_PARAM = "limit";
 
 //    Удалить все объекты, значение поля minutesOfWaiting которого эквивалентно заданному.
 //    Вернуть количество объектов, значение поля weaponType которых меньше заданного.
@@ -23,17 +20,9 @@ public class HumanBeingServlet extends HttpServlet {
     private static final String WEAPON_TYPE_LESS = "weaponTypeLess";
     private static final String SOUNDTRACK_NAME_STARTS = "soundtrackNameStarts";
 
-    private static final String NAME_PARAM = "name";
     private static final String MINUTES_OF_WAITING_PARAM = "minutesOfWaiting";
-    private static final String REAL_HERO_PARAM = "realHero";
-    private static final String HAS_TOOTHPICK_PARAM = "hasToothpick";
-    private static final String IMPACT_SPEED_PARAM = "impactSpeed";
     private static final String SOUNDTRACK_NAME_PARAM = "soundtrackName";
     private static final String WEAPON_TYPE_PARAM = "weaponType";
-    private static final String CAR_NAME_PARAM = "carName";
-    private static final String COORDINATES_X_PARAM = "coordinatesX";
-    private static final String COORDINATES_Y_PARAM = "coordinatesY";
-    private static final String CREATION_DATE_PARAM = "date";
 
     private HumanBeingService service;
 
@@ -44,22 +33,7 @@ public class HumanBeingServlet extends HttpServlet {
     }
 
     private HumanBeingRequestParams getFilterParams(HttpServletRequest request) {
-       return new HumanBeingRequestParams(
-               request.getParameter(NAME_PARAM),
-               request.getParameterValues(MINUTES_OF_WAITING_PARAM),
-               request.getParameter(REAL_HERO_PARAM),
-               request.getParameter(HAS_TOOTHPICK_PARAM),
-               request.getParameterValues(IMPACT_SPEED_PARAM),
-               request.getParameter(SOUNDTRACK_NAME_PARAM),
-               request.getParameterValues(WEAPON_TYPE_PARAM),
-               request.getParameter(CAR_NAME_PARAM),
-               request.getParameterValues(COORDINATES_X_PARAM),
-               request.getParameterValues(COORDINATES_Y_PARAM),
-               request.getParameterValues(CREATION_DATE_PARAM),
-               request.getParameterValues(SORTING_PARAM),
-               request.getParameter(PAGE_INDEX),
-               request.getParameter(PAGE_SIZE_PARAM)
-        );
+       return new HumanBeingRequestParams(request);
     }
 
     @Override

@@ -11,6 +11,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
+import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -32,7 +33,41 @@ public class HumanBeingRequestParams {
     public final int pageIndex;
     public final int limit;
 
-    HumanBeingRequestParams(
+    private static final String NAME_PARAM = "name";
+    private static final String MINUTES_OF_WAITING_PARAM = "minutesOfWaiting";
+    private static final String REAL_HERO_PARAM = "realHero";
+    private static final String HAS_TOOTHPICK_PARAM = "hasToothpick";
+    private static final String IMPACT_SPEED_PARAM = "impactSpeed";
+    private static final String SOUNDTRACK_NAME_PARAM = "soundtrackName";
+    private static final String WEAPON_TYPE_PARAM = "weaponType";
+    private static final String CAR_NAME_PARAM = "carName";
+    private static final String COORDINATES_X_PARAM = "coordinatesX";
+    private static final String COORDINATES_Y_PARAM = "coordinatesY";
+    private static final String CREATION_DATE_PARAM = "creationDate";
+
+    private static final String SORTING_PARAM = "sort";
+    private static final String PAGE_INDEX = "pageIndex";
+    private static final String PAGE_SIZE_PARAM = "limit";
+
+    HumanBeingRequestParams(HttpServletRequest request){
+        this(request.getParameter(NAME_PARAM),
+                request.getParameterValues(MINUTES_OF_WAITING_PARAM),
+                request.getParameter(REAL_HERO_PARAM),
+                request.getParameter(HAS_TOOTHPICK_PARAM),
+                request.getParameterValues(IMPACT_SPEED_PARAM),
+                request.getParameter(SOUNDTRACK_NAME_PARAM),
+                request.getParameterValues(WEAPON_TYPE_PARAM),
+                request.getParameter(CAR_NAME_PARAM),
+                request.getParameterValues(COORDINATES_X_PARAM),
+                request.getParameterValues(COORDINATES_Y_PARAM),
+                request.getParameterValues(CREATION_DATE_PARAM),
+                request.getParameterValues(SORTING_PARAM),
+                request.getParameter(PAGE_INDEX),
+                request.getParameter(PAGE_SIZE_PARAM)
+        );
+    }
+
+  private   HumanBeingRequestParams(
             String name,
             String[] minutesOfWaiting,
             String realHero,
@@ -67,6 +102,14 @@ public class HumanBeingRequestParams {
     private String like(String val) {
         return "%" + val + "%";
     }
+
+   boolean isHumanBeingField(String param){
+        return (NAME_PARAM.equals(param)||MINUTES_OF_WAITING_PARAM.equals(param)
+        ||IMPACT_SPEED_PARAM.equals(param)||WEAPON_TYPE_PARAM.equals(param)
+        ||CAR_NAME_PARAM.equals(param)||HAS_TOOTHPICK_PARAM.equals(param)||REAL_HERO_PARAM.equals(param)
+        ||SOUNDTRACK_NAME_PARAM.equals(param)||COORDINATES_X_PARAM.equals(param)||COORDINATES_Y_PARAM.equals(param)
+        ||CREATION_DATE_PARAM.equals(param));
+   }
 
     public List<javax.persistence.criteria.Predicate> getPredicates(
             CriteriaBuilder cb,
@@ -134,26 +177,40 @@ public class HumanBeingRequestParams {
                     predicates.add(cb.equal(joinCoordinates.get("y"), Float.parseFloat(coordinatesY[0])));
             if (creationDate != null)
                 if (creationDate.length > 1) {
-                    predicates.add(cb.greaterThanOrEqualTo(root.get("creationDate"),new SimpleDateFormat("dd.MM.yyyy").parse(creationDate[0])));
-                    predicates.add(cb.lessThanOrEqualTo(root.get("creationDate"), new SimpleDateFormat("dd.MM.yyyy").parse(creationDate[1])));
+                    if (creationDate[0]!=null && !creationDate[0].isEmpty())
+                      predicates.add(cb.greaterThanOrEqualTo(root.get("creationDate"),new SimpleDateFormat("dd.MM.yyyy").parse(creationDate[0])));
+                    if (creationDate[1]!=null && !creationDate[1].isEmpty())
+                      predicates.add(cb.lessThanOrEqualTo(root.get("creationDate"), new SimpleDateFormat("dd.MM.yyyy").parse(creationDate[1])));
                 } else
-                    predicates.add(cb.equal(root.get("creationDate"), new SimpleDateFormat("dd.MM.yyyy").parse(creationDate[0])));
+                    if (creationDate[0]!=null && !creationDate[0].isEmpty())
+                        predicates.add(cb.equal(root.get("creationDate"), new SimpleDateFormat("dd.MM.yyyy").parse(creationDate[0])));
 
         return predicates;
     }
 
-    public List<Order> getOrders(CriteriaBuilder cb, Root<HumanBeing> root, Join<HumanBeing, Coordinates> joinCoordinates, Join<HumanBeing, Car> joinCar ) {
+    public List<Order> getOrders(CriteriaBuilder cb, Root<HumanBeing> root, Join<HumanBeing, Coordinates> joinCoordinates, Join<HumanBeing, Car> joinCar ) throws ParseException{
         List<Order> orders = new ArrayList<>();
         if (sort != null)
             for (String s : sort) {
-                boolean asc = s.charAt(0) == 'a';
-                String field = s.substring(1);
+                String[] args = s.split("_",2);
+                if (args.length!=2)
+                    throw new ParseException("incorrect sort parameter "+s,0);
+                boolean asc;
+                if (args[0].equals("asc"))
+                    asc=true;
+                else if(args[0].equals("desc"))
+                    asc = false;
+                else
+                    throw new ParseException("incorrect sort parameter "+s,0);
+                String field = args[1];
+                if (!isHumanBeingField(field))
+                    throw new ParseException("incorrect sort parameter "+s,0);
                 if (field.startsWith("coordinates"))
                     orders.add(asc?cb.asc(joinCoordinates.get(field.replaceAll("coordinates","").toLowerCase()))
                                   :cb.desc(joinCoordinates.get(field.replaceAll("coordinates","").toLowerCase())));
                 else if (field.startsWith("car"))
                     orders.add(asc?cb.asc(joinCar.get(field.replaceAll("car","").toLowerCase()))
-                            :cb.desc(joinCoordinates.get(field.replaceAll("car","").toLowerCase())));
+                                 :cb.desc(joinCar.get(field.replaceAll("car","").toLowerCase())));
                 else
                     orders.add(asc?cb.asc(root.get(field))
                             :cb.desc(root.get(field)));

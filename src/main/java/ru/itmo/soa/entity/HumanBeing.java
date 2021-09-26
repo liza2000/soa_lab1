@@ -48,7 +48,15 @@ public class HumanBeing {
 
     public void update(HumanData data) {
         this.name = data.getName();
-        this.car.update(data.getCar());
+        if (data.getCar() == null)
+            this.car = null;
+        else
+            if (car!=null)
+                this.car.update(data.getCar());
+            else {
+                this.car = new Car();
+                this.car.update(data.getCar());
+            }
         this.coordinates.update(data.getCoordinates());
         this.hasToothpick = data.getHasToothpick();
         this.impactSpeed = data.getImpactSpeed();

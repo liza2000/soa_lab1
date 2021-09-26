@@ -25,6 +25,9 @@ public class ErrorHandlerServlet extends HttpServlet {
             } else {
                 resp.setStatus(400);
             }
+            if (exception instanceof NumberFormatException)
+                writer.write("Incorrect number "+exception.getMessage());
+            else
             writer.write(exception.getMessage());
         }
     }
