@@ -10,6 +10,7 @@ import ru.itmo.soa.entity.Coordinates;
 import ru.itmo.soa.entity.HumanBeing;
 import ru.itmo.soa.entity.WeaponType;
 
+import javax.sql.DataSource;
 import java.util.Properties;
 
 
@@ -26,17 +27,12 @@ public class HibernateDatasource {
                 Configuration configuration = new Configuration();
 
                 Properties settings = new Properties();
-                settings.put(Environment.DRIVER, "org.postgresql.Driver");
-                settings.put(Environment.URL, "jdbc:postgresql://localhost:5432/postgres");
-                settings.put(Environment.USER, "postgres");
-                settings.put(Environment.PASS, "postgres");
-                settings.put(Environment.DIALECT, "org.hibernate.dialect.PostgreSQL9Dialect");
 
                 settings.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
                 settings.put(Environment.SHOW_SQL, "true");
-
-                settings.put(Environment.HBM2DDL_AUTO, "update");
+                settings.put(Environment.HBM2DDL_AUTO, "create");
                 settings.put(Environment.HBM2DDL_CHARSET_NAME, "UTF-8");
+                settings.put(Environment.DATASOURCE, "java:/PostgresDS");
 
                 configuration.setProperties(settings);
 
