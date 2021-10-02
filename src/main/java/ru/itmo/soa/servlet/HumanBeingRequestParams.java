@@ -34,19 +34,19 @@ public class HumanBeingRequestParams {
     public final int limit;
 
     private static final String NAME_PARAM = "name";
-    private static final String MINUTES_OF_WAITING_PARAM = "minutesOfWaiting";
-    private static final String REAL_HERO_PARAM = "realHero";
-    private static final String HAS_TOOTHPICK_PARAM = "hasToothpick";
-    private static final String IMPACT_SPEED_PARAM = "impactSpeed";
-    private static final String SOUNDTRACK_NAME_PARAM = "soundtrackName";
-    private static final String WEAPON_TYPE_PARAM = "weaponType";
-    private static final String CAR_NAME_PARAM = "carName";
-    private static final String COORDINATES_X_PARAM = "coordinatesX";
-    private static final String COORDINATES_Y_PARAM = "coordinatesY";
-    private static final String CREATION_DATE_PARAM = "creationDate";
+    private static final String MINUTES_OF_WAITING_PARAM = "minutes-of-waiting";
+    private static final String REAL_HERO_PARAM = "real-hero";
+    private static final String HAS_TOOTHPICK_PARAM = "has-toothpick";
+    private static final String IMPACT_SPEED_PARAM = "impact-speed";
+    private static final String SOUNDTRACK_NAME_PARAM = "soundtrack-name";
+    private static final String WEAPON_TYPE_PARAM = "weapon-type";
+    private static final String CAR_NAME_PARAM = "carname";
+    private static final String COORDINATES_X_PARAM = "coordinatesx";
+    private static final String COORDINATES_Y_PARAM = "coordinatesx";
+    private static final String CREATION_DATE_PARAM = "creation-date";
 
     private static final String SORTING_PARAM = "sort";
-    private static final String PAGE_INDEX = "pageIndex";
+    private static final String PAGE_INDEX = "page-index";
     private static final String PAGE_SIZE_PARAM = "limit";
 
     HumanBeingRequestParams(HttpServletRequest request){
