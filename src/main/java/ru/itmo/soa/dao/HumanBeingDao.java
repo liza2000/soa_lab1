@@ -96,8 +96,8 @@ public class HumanBeingDao {
         }
     }
 
-    @SneakyThrows
-    public PaginationResult getAllHumans(HumanBeingRequestParams params) {
+
+    public PaginationResult getAllHumans(HumanBeingRequestParams params) throws ParseException{
         Transaction transaction = null;
         PaginationResult res = new PaginationResult();
         try (Session session = HibernateDatasource.getSessionFactory().openSession()) {

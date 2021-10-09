@@ -1,99 +1,147 @@
 package ru.itmo.soa.servlet;
 
 import com.google.gson.Gson;
-import lombok.SneakyThrows;
+
+import ru.itmo.soa.dao.HumanBeingDao;
+import ru.itmo.soa.entity.HumanBeing;
+import ru.itmo.soa.entity.data.HumanData;
 import ru.itmo.soa.service.HumanBeingService;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
+import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
+import javax.xml.bind.ValidationException;
+import java.text.ParseException;
+import java.util.stream.Collectors;
 
-//@WebServlet(name = "humanBeing", value = "/human-being/*")
-public class HumanBeingServlet extends HttpServlet {
-
+@Path("/human-being")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+public class HumanBeingServlet extends Application{
 
 //    Удалить все объекты, значение поля minutesOfWaiting которого эквивалентно заданному.
 //    Вернуть количество объектов, значение поля weaponType которых меньше заданного.
 //    Вернуть массив объектов, значение поля soundtrackName которых начинается с заданной подстроки.
 
-    private static final String WEAPON_TYPE_LESS = "weaponTypeLess";
-    private static final String SOUNDTRACK_NAME_STARTS = "soundtrackNameStarts";
+    private static final String WEAPON_TYPE_LESS = "weapon-type-less";
+    private static final String SOUNDTRACK_NAME_STARTS = "soundtrack-name-starts";
 
-    private static final String MINUTES_OF_WAITING_PARAM = "minutesOfWaiting";
-    private static final String SOUNDTRACK_NAME_PARAM = "soundtrackName";
-    private static final String WEAPON_TYPE_PARAM = "weaponType";
+    private static final String MINUTES_OF_WAITING_PARAM = "minutes-of-waiting";
+    private static final String SOUNDTRACK_NAME_PARAM = "soundtrack-name";
+    private static final String WEAPON_TYPE_PARAM = "weapon-type";
 
-    private HumanBeingService service;
+    private final HumanBeingService service;
 
-    @Override
-    public void init() throws ServletException {
-        super.init();
-        service = new HumanBeingService(new Gson());
+    Gson gson = new Gson();
+    public HumanBeingServlet() {
+        service = new HumanBeingService();
     }
 
-    private HumanBeingRequestParams getFilterParams(HttpServletRequest request) {
-       return new HumanBeingRequestParams(request);
+
+    private HumanBeingRequestParams getFilterParams(MultivaluedMap<String, String> map) {
+        return new HumanBeingRequestParams(map);
     }
 
-    @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) {
-        String pathInfo = request.getPathInfo();
-        String[] servletPath = pathInfo == null ? null : pathInfo.split("/");
-
-        if (servletPath == null || servletPath.length <= 1) {
-            HumanBeingRequestParams filterParams = getFilterParams(request);
-            service.getAllHumans(response, filterParams);
-            return;
-        }
-
-        if (SOUNDTRACK_NAME_STARTS.equals(servletPath[1])) {
-            String soundtrackName = request.getParameter(SOUNDTRACK_NAME_PARAM);
-            if (soundtrackName != null)
-                service.findHumansSoundtrackNameStartsWith(response, soundtrackName);
-            return;
-        }
-
-        if (WEAPON_TYPE_LESS.equals(servletPath[1])) {
-            String weaponType = request.getParameter(WEAPON_TYPE_PARAM);
-            if (weaponType != null)
-                service.countWeaponTypeLess(response, weaponType);
-            return;
-        }
-        String id = servletPath[1];
-        service.getHuman(response, Long.parseLong(id));
-    }
-
-    @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) {
-            service.createHuman(request, response);
-    }
-
-    @SneakyThrows
-    @Override
-    public void doPut(HttpServletRequest request, HttpServletResponse response) {
-        String pathInfo = request.getPathInfo();
-        String[] servletPath = pathInfo == null ? null : pathInfo.split("/");
-
-        if (servletPath != null && servletPath.length > 1) {
-            String id = servletPath[1];
-            service.updateHuman(Long.parseLong(id), request, response);
+    @GET
+    public Response get(@Context UriInfo ui) {
+        MultivaluedMap<String, String> map = ui.getQueryParameters();
+        try {
+            HumanBeingRequestParams filterParams = getFilterParams(map);
+             HumanBeingDao.PaginationResult humans = service.getAllHumans(filterParams);
+            return Response.ok(gson.toJson(humans)).build();
+        } catch (NumberFormatException  e) {
+            return Response.status(400 ).entity("Incorrect number " + e.getMessage()).build();
+        }catch ( ParseException e) {
+            return Response.status(400).entity( e.getMessage()).build();
         }
     }
 
-    @Override
-    public void doDelete(HttpServletRequest request, HttpServletResponse response) {
-        String pathInfo = request.getPathInfo();
-        if (pathInfo == null || pathInfo.split("/").length==0) {
-            String minutesOfWaiting = request.getParameter(MINUTES_OF_WAITING_PARAM);
-            if (minutesOfWaiting != null)
-                service.deleteAllMinutesOfWaitingEqual(response, Double.parseDouble(minutesOfWaiting));
-        } else {
-            String[] servletPath = pathInfo.split("/");
-            if (servletPath.length > 1) {
-                String id = servletPath[1];
-                service.deleteHuman(response, Integer.parseInt(id));
-            }
+
+    @GET
+    @Path("/{id}")
+    public Response getOne(@PathParam("id") Long id) {
+        try {
+            HumanBeing human = service.getHuman(id);
+            return Response.ok(gson.toJson(human)).build();
+        } catch (EntityNotFoundException e) {
+            return Response.status(404).entity( e.getMessage()).build();
+        } catch (NumberFormatException e) {
+            return Response.status(400).entity("Incorrect number " + e.getMessage()).build();
         }
+    }
+
+    @GET
+    @Path(SOUNDTRACK_NAME_STARTS)
+    public Response getSoundtrackNameStarts(@QueryParam(SOUNDTRACK_NAME_PARAM) String soundtrackName) {
+        if (soundtrackName != null)
+            return Response.ok(gson.toJson(service.findHumansSoundtrackNameStartsWith(soundtrackName))).build();
+        return Response.status(400).entity("Incorrect parameter " + SOUNDTRACK_NAME_PARAM).build();
+    }
+
+    @GET
+    @Path(WEAPON_TYPE_LESS)
+    public Response getWeaponTypeLess(@QueryParam(WEAPON_TYPE_PARAM) String weaponType) {
+        if (weaponType != null)
+            return Response.ok(service.countWeaponTypeLess(weaponType)).build();
+        return Response.status(400).entity("Incorrect parameter " + WEAPON_TYPE_PARAM).build();
+    }
+
+
+    @POST
+    public Response doPost(@Context HttpServletRequest request) {
+        try {
+            String requestData = request.getReader().lines().collect(Collectors.joining());
+            HumanData humanData = gson.fromJson(requestData, HumanData.class);
+            HumanBeing human = service.createHuman(humanData);
+            return Response.status(201).entity(gson.toJson(human)).build();
+        } catch (NumberFormatException e) {
+            return Response.status(400).entity("Incorrect number: " + e.getMessage()).build();
+        } catch (ValidationException e) {
+            return Response.status(400).entity(e.getMessage()).build();
+        }catch (Exception e){
+           return Response.serverError().build();
+        }
+    }
+
+    @PUT
+    @Path("/{id}")
+    public Response doPut(@PathParam("id") Long id, @Context HttpServletRequest request) {
+        try {
+            String requestData = request.getReader().lines().collect(Collectors.joining());
+            HumanData humanData = gson.fromJson(requestData, HumanData.class);
+            service.updateHuman(id, humanData);
+            return Response.ok(gson.toJson("Updated successfully")).build();
+        } catch (NumberFormatException e) {
+            return Response.status(400).entity("Incorrect number: " + e.getMessage()).build();
+        } catch (ValidationException e) {
+            return Response.status(400).entity(e.getMessage()).build();
+        } catch (EntityNotFoundException e) {
+            return Response.status(404).entity(e.getMessage()).build();
+        }catch (Exception e){
+            return Response.serverError().build();
+        }
+    }
+
+    @DELETE
+    @Path("/{id}")
+    public Response doDelete(@PathParam("id") Long id) {
+        try {
+            service.deleteHuman(id);
+            return Response.ok(gson.toJson("Deleted successfully")).build();
+        } catch (EntityNotFoundException e) {
+            return Response.status(404).entity(e.getMessage()).build();
+        }
+    }
+
+    @DELETE
+    public Response doDelete(@QueryParam(MINUTES_OF_WAITING_PARAM) Double minutesOfWaiting) {
+        if (minutesOfWaiting != null) {
+            int count = service.deleteAllMinutesOfWaitingEqual(minutesOfWaiting);
+            if (count == 0)
+                return Response.status(404).entity("No humans with minutes of waiting = " + minutesOfWaiting).build();
+            else return Response.ok(gson.toJson("Deleted " + count + " humans")).build();
+        }
+        return Response.status(400).entity("Incorrect parameter " + MINUTES_OF_WAITING_PARAM).build();
     }
 }

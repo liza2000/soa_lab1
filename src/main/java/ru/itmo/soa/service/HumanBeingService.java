@@ -11,102 +11,73 @@ import ru.itmo.soa.entity.data.validator.HumanValidator;
 import ru.itmo.soa.servlet.HumanBeingRequestParams;
 
 import javax.persistence.EntityNotFoundException;
-import java.io.PrintWriter;
+import javax.xml.bind.ValidationException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 
 public class HumanBeingService {
 
-    private final Gson gson;
     private final HumanBeingDao dao;
     private final HumanValidator humanValidator;
 
-    public HumanBeingService(Gson gson) {
-        this.gson =gson;
+    public HumanBeingService() {
         humanValidator = new HumanValidator();
         dao = new HumanBeingDao();
     }
 
     @SneakyThrows
-    public void countWeaponTypeLess(HttpServletResponse response, String weaponType) {
-        Long count = dao.countHumansWeaponTypeLess(weaponType);
-        response.setStatus(200);
-        PrintWriter writer = response.getWriter();
-        writer.write(gson.toJson(count));
+    public Long countWeaponTypeLess(String weaponType) {
+        return dao.countHumansWeaponTypeLess(weaponType);
     }
 
     @SneakyThrows
-    public void findHumansSoundtrackNameStartsWith(HttpServletResponse response, String soundtrackName) {
-        List<HumanBeing> list = dao.findHumansSoundtrackNameStarts(soundtrackName);
-        response.setStatus(200);
-        PrintWriter writer = response.getWriter();
-        writer.write(gson.toJson(list));
+    public List<HumanBeing> findHumansSoundtrackNameStartsWith(String soundtrackName) {
+        return dao.findHumansSoundtrackNameStarts(soundtrackName);
     }
 
     @SneakyThrows
-    public void deleteAllMinutesOfWaitingEqual(HttpServletResponse response, double minutesOfWaiting) {
-        int count = dao.deleteAllHumanMinutesOfWaitingEqual(minutesOfWaiting);
-        response.setStatus(count > 0 ? 200 : 404);
-        PrintWriter writer = response.getWriter();
-        writer.write(gson.toJson(count>0?"Deleted "+ count + " humans":"No humans with minutes of waiting = " + minutesOfWaiting));
+    public int deleteAllMinutesOfWaitingEqual(double minutesOfWaiting) {
+        return dao.deleteAllHumanMinutesOfWaitingEqual(minutesOfWaiting);
     }
 
     @SneakyThrows
-    public void getHuman(HttpServletResponse response, long id) {
+    public HumanBeing getHuman(long id) {
         Optional<HumanBeing> human = dao.getHuman(id);
-        if (human.isPresent()) {
-            response.setStatus(200);
-            PrintWriter writer = response.getWriter();
-            writer.write(gson.toJson(human.get()));
-        } else {
+        if (human.isPresent())
+            return human.get();
+         else
             throw new EntityNotFoundException("Cannot find human with id " + id);
-        }
+    }
+
+
+    public HumanBeingDao.PaginationResult getAllHumans( HumanBeingRequestParams params) throws ParseException{
+        return dao.getAllHumans(params);
     }
 
     @SneakyThrows
-    public void getAllHumans(HttpServletResponse response, HumanBeingRequestParams params) {
-        HumanBeingDao.PaginationResult humans = dao.getAllHumans(params);
-        response.setStatus(200);
-        PrintWriter writer = response.getWriter();
-        writer.write(gson.toJson(humans));
-    }
-
-    @SneakyThrows
-    public void createHuman(HttpServletRequest request, HttpServletResponse response) {
-        String requestData = request.getReader().lines().collect(Collectors.joining());
-        HumanData humanData = gson.fromJson(requestData, HumanData.class);
+    public HumanBeing createHuman(HumanData humanData) throws ValidationException {
         humanValidator.validate(humanData);
-        HumanBeing human = dao.createHuman(humanData.toHumanBeing());
-        response.setStatus(201);
-        response.getWriter().write(gson.toJson(human));
+        return dao.createHuman(humanData.toHumanBeing());
     }
 
     @SneakyThrows
-    public void updateHuman(long id, HttpServletRequest request, HttpServletResponse response) {
-        String requestData = request.getReader().lines().collect(Collectors.joining());
-        HumanData humanData = gson.fromJson(requestData, HumanData.class);
-        humanValidator.validate(humanData);
+    public void updateHuman(long id, HumanData humanData) throws ValidationException{
         Optional<HumanBeing> human = dao.getHuman(id);
         if (human.isPresent()) {
             HumanBeing humanBeing = human.get();
             humanBeing.update(humanData);
             dao.updateHuman(humanBeing);
-            response.setStatus(200);
-            response.getWriter().write(gson.toJson("Updated successfully"));
-        } else {
+        } else
             throw new EntityNotFoundException("Cannot update human with id "+ id);
-        }
+
     }
 
     @SneakyThrows
-    public void deleteHuman(HttpServletResponse response, long id) {
-        if (dao.deleteHuman(id)) {
-            response.setStatus(200);
-            response.getWriter().write(gson.toJson("Deleted successfully"));
-        } else {
+    public void deleteHuman(Long id) {
+        if (!dao.deleteHuman(id))
             throw new EntityNotFoundException("Cannot find human with id " + id);
-        }
+
     }
 }
