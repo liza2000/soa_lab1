@@ -15,7 +15,7 @@ import javax.xml.bind.ValidationException;
 import java.text.ParseException;
 import java.util.stream.Collectors;
 
-@Path("/human_being")
+@Path("/human-being")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class HumanBeingResource {
@@ -89,10 +89,10 @@ public class HumanBeingResource {
 
 
     @POST
-    public Response doPost(@Context HttpServletRequest request) {
+    public Response doPost(String humanDataS) {
         try {
-            String requestData = request.getReader().lines().collect(Collectors.joining());
-            HumanData humanData = gson.fromJson(requestData, HumanData.class);
+//            String requestData = request.getReader().lines().collect(Collectors.joining());
+            HumanData humanData = gson.fromJson(humanDataS, HumanData.class);
             HumanBeing human = service.createHuman(humanData);
             return Response.status(201).entity(gson.toJson(human)).build();
         } catch (NumberFormatException e) {
@@ -106,10 +106,10 @@ public class HumanBeingResource {
 
     @PUT
     @Path("/{id}")
-    public Response doPut(@PathParam("id") Long id, @Context HttpServletRequest request) {
+    public Response doPut(@PathParam("id") Long id, String request) {
         try {
-            String requestData = request.getReader().lines().collect(Collectors.joining());
-            HumanData humanData = gson.fromJson(requestData, HumanData.class);
+           // String requestData = request.getReader().lines().collect(Collectors.joining());
+            HumanData humanData = gson.fromJson(request, HumanData.class);
             service.updateHuman(id, humanData);
             return Response.ok(gson.toJson("Updated successfully")).build();
         } catch (NumberFormatException e) {
