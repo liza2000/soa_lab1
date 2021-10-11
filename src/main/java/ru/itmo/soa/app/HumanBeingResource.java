@@ -1,4 +1,4 @@
-package ru.itmo.soa.servlet;
+package ru.itmo.soa.app;
 
 import com.google.gson.Gson;
 
@@ -15,10 +15,10 @@ import javax.xml.bind.ValidationException;
 import java.text.ParseException;
 import java.util.stream.Collectors;
 
-@Path("/human-being")
+@Path("/human_being")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class HumanBeingServlet extends Application{
+public class HumanBeingResource {
 
 //    Удалить все объекты, значение поля minutesOfWaiting которого эквивалентно заданному.
 //    Вернуть количество объектов, значение поля weaponType которых меньше заданного.
@@ -34,7 +34,7 @@ public class HumanBeingServlet extends Application{
     private final HumanBeingService service;
 
     Gson gson = new Gson();
-    public HumanBeingServlet() {
+    public HumanBeingResource() {
         service = new HumanBeingService();
     }
 

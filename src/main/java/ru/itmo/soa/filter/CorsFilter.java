@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 // For further use
-@WebFilter("*")
+@WebFilter("/*")
 public class CorsFilter implements Filter {
 
     @Override

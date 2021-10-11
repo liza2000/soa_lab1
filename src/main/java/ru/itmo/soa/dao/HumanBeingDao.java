@@ -2,7 +2,6 @@ package ru.itmo.soa.dao;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.SneakyThrows;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -10,7 +9,7 @@ import ru.itmo.soa.datasource.HibernateDatasource;
 import ru.itmo.soa.entity.Car;
 import ru.itmo.soa.entity.Coordinates;
 import ru.itmo.soa.entity.HumanBeing;
-import ru.itmo.soa.servlet.HumanBeingRequestParams;
+import ru.itmo.soa.app.HumanBeingRequestParams;
 
 import javax.persistence.criteria.*;
 import java.text.ParseException;

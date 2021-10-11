@@ -1,4 +1,4 @@
-package ru.itmo.soa.servlet;
+package ru.itmo.soa.app;
 
 import ru.itmo.soa.entity.Car;
 import ru.itmo.soa.entity.Coordinates;

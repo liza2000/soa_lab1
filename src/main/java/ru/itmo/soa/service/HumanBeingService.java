@@ -1,14 +1,11 @@
 package ru.itmo.soa.service;
 
-import com.google.gson.Gson;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import ru.itmo.soa.dao.HumanBeingDao;
 import ru.itmo.soa.entity.HumanBeing;
 import ru.itmo.soa.entity.data.HumanData;
 import ru.itmo.soa.entity.data.validator.HumanValidator;
-import ru.itmo.soa.servlet.HumanBeingRequestParams;
+import ru.itmo.soa.app.HumanBeingRequestParams;
 
 import javax.persistence.EntityNotFoundException;
 import javax.xml.bind.ValidationException;
