@@ -14,9 +14,7 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 
-// TODO независимость от окружения
-// TODO фильтрация по полям
-// TODO пагинация
+
 
 public class HibernateDatasource {
     private static SessionFactory sessionFactory;
@@ -32,7 +30,7 @@ public class HibernateDatasource {
                 settings.put(Environment.SHOW_SQL, "true");
                 settings.put(Environment.HBM2DDL_AUTO, "create");
                 settings.put(Environment.HBM2DDL_CHARSET_NAME, "UTF-8");
-                settings.put(Environment.DATASOURCE, "java:/PostgresDS");
+                settings.put(Environment.DATASOURCE, "java/PostgresDS");
 
                 configuration.setProperties(settings);
 
