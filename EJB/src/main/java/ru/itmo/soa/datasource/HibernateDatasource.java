@@ -10,10 +10,7 @@ import ru.itmo.soa.entity.Coordinates;
 import ru.itmo.soa.entity.HumanBeing;
 import ru.itmo.soa.entity.WeaponType;
 
-import javax.sql.DataSource;
 import java.util.Properties;
-
-
 
 
 public class HibernateDatasource {

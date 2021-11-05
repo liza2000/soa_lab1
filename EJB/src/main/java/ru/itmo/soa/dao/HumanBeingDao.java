@@ -9,7 +9,7 @@ import ru.itmo.soa.datasource.HibernateDatasource;
 import ru.itmo.soa.entity.Car;
 import ru.itmo.soa.entity.Coordinates;
 import ru.itmo.soa.entity.HumanBeing;
-import ru.itmo.soa.app.HumanBeingRequestParams;
+import ru.itmo.soa.entity.data.PaginationData;
 
 import javax.persistence.criteria.*;
 import java.text.ParseException;
@@ -79,26 +79,11 @@ public class HumanBeingDao {
         return deletedCount;
     }
 
-    @Data
-    @AllArgsConstructor
-    public static class PaginationResult {
-
-        private final int pageSize;
-        private final int pageIndex;
-        private final long totalItems;
-        private final List<HumanBeing> list;
-         PaginationResult() {
-             pageSize = 0;
-             pageIndex = 0;
-             totalItems = 0;
-            list = new ArrayList<>();
-        }
-    }
 
 
-    public PaginationResult getAllHumans(HumanBeingRequestParams params) throws ParseException{
+    public PaginationData getAllHumans(HumanBeingRequestParams params) throws ParseException{
         Transaction transaction = null;
-        PaginationResult res = new PaginationResult();
+        PaginationData res = new PaginationData();
         try (Session session = HibernateDatasource.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
 
@@ -130,7 +115,7 @@ public class HumanBeingDao {
 
             List<HumanBeing> list = typedQuery.getResultList();
 
-            res = new PaginationResult(params.limit, params.pageIndex, count, list);
+            res = new PaginationData(params.limit, params.pageIndex, count, list);
 
             transaction.commit();
         } catch (NumberFormatException| ParseException e) {

@@ -1,4 +1,4 @@
-package ru.itmo.soa.app;
+package ru.itmo.soa.dao;
 
 import ru.itmo.soa.entity.Car;
 import ru.itmo.soa.entity.Coordinates;
@@ -46,7 +46,7 @@ public class HumanBeingRequestParams {
     private static final String PAGE_INDEX = "page-index";
     private static final String PAGE_SIZE_PARAM = "limit";
 
-    HumanBeingRequestParams(MultivaluedMap<String, String> info) {
+   public HumanBeingRequestParams(MultivaluedMap<String, String> info) {
         this(info.getFirst(NAME_PARAM),
                 info.get(MINUTES_OF_WAITING_PARAM),
                 info.getFirst(REAL_HERO_PARAM),
@@ -64,7 +64,7 @@ public class HumanBeingRequestParams {
         );
     }
 
-  private   HumanBeingRequestParams(
+  private HumanBeingRequestParams(
             String name,
             List<String> minutesOfWaiting,
             String realHero,

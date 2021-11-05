@@ -1,16 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <artifactId>soa_lab1</artifactId>
-    <groupId>ru.itmo.soa</groupId>
-    <version>snapshot</version>
-    <name>soa-be</name>
-    <packaging>war</packaging>
+    <parent>
+        <artifactId>soa_lab1</artifactId>
+        <groupId>ru.itmo.soa</groupId>
+        <version>snapshot</version>
+    </parent>
+    <groupId>soa</groupId>
+    <artifactId>soa_ejb</artifactId>
+    <version>1</version>
+    <name>soa-ejb</name>
+    <packaging>ejb</packaging>
 
     <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -29,11 +35,17 @@
         <consul-client.version>1.5.3</consul-client.version>
     </properties>
 
+
     <dependencies>
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
             <version>${javax.validation-api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>6.0</version>
         </dependency>
         <dependency>
             <groupId>com.orbitz.consul</groupId>
@@ -78,11 +90,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>soa</groupId>
-            <artifactId>soa_ejb</artifactId>
-            <version>1</version>
-        </dependency>
-        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>${junit.version}</version>
@@ -102,48 +109,16 @@
     </dependencies>
 
     <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>3.3.1</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.2.0</version>
-                <executions>
-                    <execution>
-                        <id>position-react-build</id>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <phase>prepare-package</phase>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${frontend-dir}</directory>
-                                    <filtering>false</filtering>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
+                <artifactId>maven-ejb-plugin</artifactId>
+                <version>2.3</version>
                 <configuration>
-                    <source>8</source>
-                    <target>8</target>
+                    <ejbVersion>3.1</ejbVersion>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
 </project>

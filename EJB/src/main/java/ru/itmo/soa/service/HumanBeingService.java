@@ -1,20 +1,23 @@
 package ru.itmo.soa.service;
 
 import lombok.SneakyThrows;
+import ru.itmo.soa.dao.HumanBeingRequestParams;
 import ru.itmo.soa.dao.HumanBeingDao;
 import ru.itmo.soa.entity.HumanBeing;
 import ru.itmo.soa.entity.data.HumanData;
+import ru.itmo.soa.entity.data.PaginationData;
 import ru.itmo.soa.entity.data.validator.HumanValidator;
-import ru.itmo.soa.app.HumanBeingRequestParams;
 
+import javax.ejb.Stateless;
 import javax.persistence.EntityNotFoundException;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.bind.ValidationException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
-
-public class HumanBeingService {
+@Stateless
+public class HumanBeingService implements RemoteEJBInterface{
 
     private final HumanBeingDao dao;
     private final HumanValidator humanValidator;
@@ -49,8 +52,8 @@ public class HumanBeingService {
     }
 
 
-    public HumanBeingDao.PaginationResult getAllHumans( HumanBeingRequestParams params) throws ParseException{
-        return dao.getAllHumans(params);
+    public PaginationData getAllHumans(MultivaluedMap<String, String> info) throws ParseException{
+        return dao.getAllHumans(new HumanBeingRequestParams(info));
     }
 
     @SneakyThrows
