@@ -36,7 +36,6 @@
             <groupId>ru.itmo.soa</groupId>
             <artifactId>soa_ejb</artifactId>
             <version>1</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.validation</groupId>

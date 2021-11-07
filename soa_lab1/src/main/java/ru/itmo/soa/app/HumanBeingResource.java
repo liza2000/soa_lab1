@@ -146,10 +146,7 @@ public class HumanBeingResource {
             final String appName = "global";
             // This is the module name of the deployed EJBs on the server. This is typically the jar name of the
             // EJB deployment, without the .jar suffix, but can be overridden via the ejb-jar.xml
-            final String moduleName = "soa_ejb-1";
-            // AS7 allows each deployment to have an (optional) distinct name. We haven't specified a distinct name for
-            // our EJB deployment, so this is an empty string
-            final String distinctName = "";
+            final String moduleName = "soa_lab1-snapshot";
             // The EJB name which by default is the simple class name of the bean implementation class
             final String beanName = "HumanBeingService";
             // the remote view fully qualified class name
