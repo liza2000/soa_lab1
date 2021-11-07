@@ -1,22 +1,21 @@
 package ru.itmo.soa.app;
 
 import com.google.gson.Gson;
-
-
+import lombok.SneakyThrows;
 import ru.itmo.soa.dao.HumanBeingRequestParams;
 import ru.itmo.soa.entity.HumanBeing;
 import ru.itmo.soa.entity.data.HumanData;
 import ru.itmo.soa.entity.data.PaginationData;
 import ru.itmo.soa.service.HumanBeingServiceI;
 
+import javax.ejb.EJBException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.persistence.EntityNotFoundException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import javax.xml.bind.ValidationException;
-import java.text.ParseException;
 import java.util.Hashtable;
+import java.util.List;
 
 @Path("/human-being")
 @Produces(MediaType.APPLICATION_JSON)
@@ -32,34 +31,20 @@ public class HumanBeingResource {
     private final HumanBeingServiceI statelessRemoteBean = lookupRemoteStatelessBean();
     private final Gson gson = new Gson();
 
+    @SneakyThrows
     @GET
     public Response get(@Context UriInfo ui) {
         MultivaluedMap<String, String> map = ui.getQueryParameters();
-        try {
-            PaginationData humans = statelessRemoteBean.getAllHumans(new HumanBeingRequestParams(map));
-            return Response.ok(gson.toJson(humans)).build();
-        } catch (NumberFormatException e) {
-            return Response.status(400).entity("Incorrect number " + e.getMessage()).build();
-        } catch (ParseException e) {
-            return Response.status(400).entity(e.getMessage()).build();
-        }
+        PaginationData humans = statelessRemoteBean.getAllHumans(new HumanBeingRequestParams(map));
+        return Response.ok(gson.toJson(humans)).build();
     }
 
 
     @GET
     @Path("/{id}")
     public Response getOne(@PathParam("id") Long id) {
-        try {
-            HumanBeing human = statelessRemoteBean.getHuman(id);
-            return Response.ok(gson.toJson(human)).build();
-        } catch (EntityNotFoundException e) {
-            return Response.status(404).entity(e.getMessage()).build();
-        } catch (NumberFormatException e) {
-            return Response.status(400).entity("Incorrect number " + e.getMessage()).build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.status(500).entity(e.getMessage()).build();
-        }
+        HumanBeing human = statelessRemoteBean.getHuman(id);
+        return Response.ok(gson.toJson(human)).build();
     }
 
     @GET
@@ -79,48 +64,27 @@ public class HumanBeingResource {
     }
 
 
+    @SneakyThrows
     @POST
     public Response doPost(String humanDataS) {
-        try {
-            HumanData humanData = gson.fromJson(humanDataS, HumanData.class);
-            HumanBeing human = statelessRemoteBean.createHuman(humanData);
-            return Response.status(201).entity(gson.toJson(human)).build();
-        } catch (NumberFormatException e) {
-            return Response.status(400).entity("Incorrect number: " + e.getMessage()).build();
-        } catch (ValidationException e) {
-            return Response.status(400).entity(e.getMessage()).build();
-        } catch (Exception e) {
-            return Response.serverError().build();
-        }
+        HumanData humanData = gson.fromJson(humanDataS, HumanData.class);
+        HumanBeing human = statelessRemoteBean.createHuman(humanData);
+        return Response.status(201).entity(gson.toJson(human)).build();
     }
 
     @PUT
     @Path("/{id}")
-    public Response doPut(@PathParam("id") Long id, String request) {
-        try {
-            HumanData humanData = gson.fromJson(request, HumanData.class);
-            statelessRemoteBean.updateHuman(id, humanData);
-            return Response.ok(gson.toJson("Updated successfully")).build();
-        } catch (NumberFormatException e) {
-            return Response.status(400).entity("Incorrect number: " + e.getMessage()).build();
-        } catch (ValidationException e) {
-            return Response.status(400).entity(e.getMessage()).build();
-        } catch (EntityNotFoundException e) {
-            return Response.status(404).entity(e.getMessage()).build();
-        } catch (Exception e) {
-            return Response.serverError().build();
-        }
+    public Response doPut(@PathParam("id") Long id, String request) throws ValidationException {
+        HumanData humanData = gson.fromJson(request, HumanData.class);
+        statelessRemoteBean.updateHuman(id, humanData);
+        return Response.ok(gson.toJson("Updated successfully")).build();
     }
 
     @DELETE
     @Path("/{id}")
     public Response doDelete(@PathParam("id") Long id) {
-        try {
-            statelessRemoteBean.deleteHuman(id);
-            return Response.ok(gson.toJson("Deleted successfully")).build();
-        } catch (EntityNotFoundException e) {
-            return Response.status(404).entity(e.getMessage()).build();
-        }
+        statelessRemoteBean.deleteHuman(id);
+        return Response.ok(gson.toJson("Deleted successfully")).build();
     }
 
     @DELETE
@@ -156,7 +120,32 @@ public class HumanBeingResource {
             return (HumanBeingServiceI) context.lookup(lookupName);
         } catch (NamingException e) {
             System.out.println("не получилось (");
-            return null;
+            return new HumanBeingServiceI() {
+                public Long countWeaponTypeLess(String weaponType) {
+                    throw new EJBException("ejb not available");
+                }
+                public List<HumanBeing> findHumansSoundtrackNameStartsWith(String soundtrackName) {
+                    throw new EJBException("ejb not available");
+                }
+                public int deleteAllMinutesOfWaitingEqual(double minutesOfWaiting) {
+                    throw new EJBException("ejb not available");
+                }
+                public HumanBeing getHuman(long id) {
+                    throw new EJBException("ejb not available");
+                }
+                public PaginationData getAllHumans(HumanBeingRequestParams params) {
+                    throw new EJBException("ejb not available");
+                }
+                public HumanBeing createHuman(HumanData humanData) {
+                    throw new EJBException("ejb not available");
+                }
+                public void updateHuman(long id, HumanData humanData) {
+                    throw new EJBException("ejb not available");
+                }
+                public void deleteHuman(Long id) {
+                    throw new EJBException("ejb not available");
+                }
+            };
         }
     }
 }
